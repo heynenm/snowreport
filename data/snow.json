@@ -1,0 +1,66 @@
+{
+  "updated_at": "2026-02-01T22:11:28Z",
+  "source": "Placeholder sample data (replace with real feed)",
+  "resorts": [
+    {
+      "name": "Palisades Tahoe",
+      "region": "Olympic Valley",
+      "elevation_ft": 6200,
+      "snow_24h_in": null,
+      "snow_72h_in": null,
+      "base_depth_in": null,
+      "trails_open": null,
+      "trails_total": null,
+      "lifts_open": null,
+      "lifts_total": null,
+      "terrain_open_pct": null,
+      "report_url": "https://www.palisadestahoe.com/mountain-information/snow-and-weather-report",
+      "webcam_url": "https://www.palisadestahoe.com/mountain-information/webcams"
+    },
+    {
+      "name": "Heavenly",
+      "region": "South Lake Tahoe",
+      "elevation_ft": 10067,
+      "snow_24h_in": null,
+      "snow_72h_in": null,
+      "base_depth_in": null,
+      "trails_open": null,
+      "trails_total": null,
+      "lifts_open": null,
+      "lifts_total": null,
+      "terrain_open_pct": null,
+      "report_url": "https://www.skiheavenly.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
+      "webcam_url": "https://www.skiheavenly.com/the-mountain/mountain-conditions/mountain-cams.aspx"
+    },
+    {
+      "name": "Northstar California",
+      "region": "Truckee",
+      "elevation_ft": 8610,
+      "snow_24h_in": null,
+      "snow_72h_in": null,
+      "base_depth_in": null,
+      "trails_open": null,
+      "trails_total": null,
+      "lifts_open": null,
+      "lifts_total": null,
+      "terrain_open_pct": null,
+      "report_url": "https://www.northstarcalifornia.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
+      "webcam_url": "https://www.northstarcalifornia.com/the-mountain/mountain-conditions/mountain-cams.aspx"
+    },
+    {
+      "name": "Kirkwood",
+      "region": "Kirkwood",
+      "elevation_ft": 9800,
+      "snow_24h_in": null,
+      "snow_72h_in": null,
+      "base_depth_in": null,
+      "trails_open": null,
+      "trails_total": null,
+      "lifts_open": null,
+      "lifts_total": null,
+      "terrain_open_pct": null,
+      "report_url": "https://www.kirkwood.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
+      "webcam_url": "https://www.kirkwood.com/the-mountain/mountain-conditions/mountain-cams.aspx"
+    }
+  ]
+}
