@@ -23,9 +23,9 @@ jobs:
       - name: Update data/snow.json from Open-Meteo
         run: |
           python - <<'PY'
-          import json, math
+          import json
           from datetime import datetime, timezone
-          import requests
+          from urllib.request import urlopen
 
           resorts = [
             {
@@ -69,6 +69,10 @@ jobs:
           def inches(mm):
             return round(mm / 25.4, 1)
 
+          def fetch_json(url: str):
+            with urlopen(url, timeout=30) as resp:
+              return json.loads(resp.read().decode('utf-8'))
+
           out_resorts = []
           for r in resorts:
             url = (
@@ -79,11 +83,10 @@ jobs:
               "&forecast_days=1"
               "&timezone=UTC"
             )
-            data = requests.get(url, timeout=20).json()
+            data = fetch_json(url)
             hourly = data.get('hourly', {})
-            snow = hourly.get('snowfall', [])
+            snow = hourly.get('snowfall', []) or []
 
-            # Open-Meteo snowfall is in mm water equivalent. We'll treat it as a proxy for snowfall.
             last24 = sum(snow[-24:]) if len(snow) >= 24 else sum(snow)
             last72 = sum(snow[-72:]) if len(snow) >= 72 else sum(snow)
 
