@@ -42,7 +42,7 @@
 <body>
   <header>
     <h1>Tahoe Snow Report</h1>
-    <div class="sub">This page renders resort snow stats from <code>/api/snow</code>. Update that JSON and the dashboard updates. No backend required.</div>
+    <div class="sub">This page renders resort snow stats from <code>data/snow.json</code>. Update that JSON and the dashboard updates. No backend required.</div>
     <div class="bar">
       <div class="pill">Last updated: <b id="updated">—</b></div>
       <div class="pill">Source: <b id="source">—</b></div>
@@ -53,7 +53,7 @@
   <main>
     <div id="grid" class="grid"></div>
     <div class="note small">
-      <div><b>Heads up:</b> This repo ships with placeholder values. Wire <code>/api/snow</code> to your preferred provider (or a scheduled job) for real numbers.</div>
+      <div><b>Heads up:</b> This repo ships with placeholder values. Wire <code>data/snow.json</code> to your preferred provider (or a scheduled job) for real numbers.</div>
     </div>
   </main>
 
@@ -110,7 +110,7 @@
   async function load(){
     const status = document.getElementById('status');
     try{
-      const res = await fetch('.//api/snow', {cache:'no-store'});
+      const res = await fetch('./data/snow.json', {cache:'no-store'});
       if(!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 

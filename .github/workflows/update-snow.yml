@@ -1,0 +1,129 @@
+name: Update snow.json
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Update data/snow.json from Open-Meteo
+        run: |
+          python - <<'PY'
+          import json, math
+          from datetime import datetime, timezone
+          import requests
+
+          resorts = [
+            {
+              "name": "Palisades Tahoe",
+              "region": "Olympic Valley",
+              "elevation_ft": 6200,
+              "lat": 39.1973,
+              "lon": -120.2358,
+              "report_url": "https://www.palisadestahoe.com/mountain-information",
+              "webcams_url": "https://www.palisadestahoe.com/mountain-information/webcams",
+            },
+            {
+              "name": "Heavenly",
+              "region": "South Lake Tahoe",
+              "elevation_ft": 9150,
+              "lat": 38.9351,
+              "lon": -119.9390,
+              "report_url": "https://www.skiheavenly.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
+              "webcams_url": "https://www.skiheavenly.com/the-mountain/mountain-conditions/mountain-cams.aspx",
+            },
+            {
+              "name": "Northstar",
+              "region": "Truckee",
+              "elevation_ft": 8610,
+              "lat": 39.2733,
+              "lon": -120.1210,
+              "report_url": "https://www.northstarcalifornia.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
+              "webcams_url": "https://www.northstarcalifornia.com/the-mountain/mountain-conditions/mountain-cams.aspx",
+            },
+            {
+              "name": "Kirkwood",
+              "region": "Kirkwood",
+              "elevation_ft": 7800,
+              "lat": 38.6846,
+              "lon": -120.0652,
+              "report_url": "https://www.kirkwood.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
+              "webcams_url": "https://www.kirkwood.com/the-mountain/mountain-conditions/mountain-cams.aspx",
+            },
+          ]
+
+          def inches(mm):
+            return round(mm / 25.4, 1)
+
+          out_resorts = []
+          for r in resorts:
+            url = (
+              "https://api.open-meteo.com/v1/forecast"
+              f"?latitude={r['lat']}&longitude={r['lon']}"
+              "&hourly=snowfall"
+              "&past_days=3"
+              "&forecast_days=1"
+              "&timezone=UTC"
+            )
+            data = requests.get(url, timeout=20).json()
+            hourly = data.get('hourly', {})
+            snow = hourly.get('snowfall', [])
+
+            # Open-Meteo snowfall is in mm water equivalent. We'll treat it as a proxy for snowfall.
+            last24 = sum(snow[-24:]) if len(snow) >= 24 else sum(snow)
+            last72 = sum(snow[-72:]) if len(snow) >= 72 else sum(snow)
+
+            out_resorts.append({
+              "name": r["name"],
+              "region": r["region"],
+              "elevation_ft": r["elevation_ft"],
+              "snow_24h_in": inches(last24),
+              "snow_72h_in": inches(last72),
+              "base_depth_in": None,
+              "trails_open": None,
+              "trails_total": None,
+              "lifts_open": None,
+              "lifts_total": None,
+              "report_url": r["report_url"],
+              "webcams_url": r["webcams_url"],
+              "notes": "Snowfall derived from Open-Meteo modeled snowfall (mm -> inches). Resort ops stats not provided by this source.",
+            })
+
+          payload = {
+            "updated_at": datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
+            "source": "Open-Meteo (modeled snowfall near resort coordinates)",
+            "resorts": out_resorts,
+          }
+
+          with open('data/snow.json','w',encoding='utf-8') as f:
+            json.dump(payload, f, indent=2)
+            f.write("\n")
+
+          print("Wrote data/snow.json")
+          PY
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/snow.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Update snow.json"
+          git push
