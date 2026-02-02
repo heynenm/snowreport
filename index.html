@@ -125,6 +125,7 @@ body.storm .header{animation:molt-float 3.5s ease-in-out infinite;}
     <h1>Tahoe Snow Report</h1>
     <div class="sub">This page renders resort snow stats from <code>data/snow.json</code>. Update that JSON and the dashboard updates. No backend required.</div>
     <div class="bar">
+      <div class="pill">Filter: <b id="filter">All US</b></div>
       <div class="pill">Last updated: <b id="updated">—</b></div>
       <div class="pill">Source: <b id="source">—</b></div>
       <div class="pill">Status: <b id="status">Loading…</b></div>
@@ -146,6 +147,10 @@ body.storm .header{animation:molt-float 3.5s ease-in-out infinite;}
 
 <script>
   const fmtIn = (n) => (n === null || n === undefined || n === '') ? '—' : `${n}"`;
+    const stateNames = {
+    AL:"Alabama", AK:"Alaska", AZ:"Arizona", AR:"Arkansas", CA:"California", CO:"Colorado", CT:"Connecticut", DE:"Delaware", FL:"Florida", GA:"Georgia", HI:"Hawaii", ID:"Idaho", IL:"Illinois", IN:"Indiana", IA:"Iowa", KS:"Kansas", KY:"Kentucky", LA:"Louisiana", ME:"Maine", MD:"Maryland", MA:"Massachusetts", MI:"Michigan", MN:"Minnesota", MS:"Mississippi", MO:"Missouri", MT:"Montana", NE:"Nebraska", NV:"Nevada", NH:"New Hampshire", NJ:"New Jersey", NM:"New Mexico", NY:"New York", NC:"North Carolina", ND:"North Dakota", OH:"Ohio", OK:"Oklahoma", OR:"Oregon", PA:"Pennsylvania", RI:"Rhode Island", SC:"South Carolina", SD:"South Dakota", TN:"Tennessee", TX:"Texas", UT:"Utah", VT:"Vermont", VA:"Virginia", WA:"Washington", WV:"West Virginia", WI:"Wisconsin", WY:"Wyoming", DC:"District of Columbia"
+  };
+
   const fmtPct = (n) => (n === null || n === undefined || n === '') ? '—' : `${n}%`;
   const badgeClass = (snow24) => {
     if (snow24 === null || snow24 === undefined) return '';
@@ -196,7 +201,13 @@ body.storm .header{animation:molt-float 3.5s ease-in-out infinite;}
       const data = await res.json();
 
       document.getElementById('updated').textContent = data.updated_at || '—';
-      document.getElementById('source').textContent = data.source || '—';
+      document.getElementById("source").textContent = data.source || "—";
+      const filterEl = document.getElementById("filter");
+      if(filterEl){
+        if(state && stateNames[state]) filterEl.textContent = stateNames[state];
+        else if(state) filterEl.textContent = state;
+        else filterEl.textContent = "All US";
+      }
       status.textContent = 'OK';
 
       const grid = document.getElementById('grid');

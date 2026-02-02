@@ -1,48 +1,11 @@
 // Vercel Serverless Function: /api/snow
-// Fetches Tahoe resort snow data from Open-Meteo (free, no API key) and returns
+// Fetches US resort snow data from Open-Meteo (free, no API key) and returns
 // JSON in the same shape as /data/snow.json so the frontend can consume it.
 //
 // NOTE: This is *snowfall* (precip as snow) from a weather model, not each resort's
 // official ops report (lifts/trails). But it's reliable, automated, and keyless.
 
-const RESORTS = [
-  {
-    name: "Palisades Tahoe",
-    region: "Olympic Valley",
-    elevation_ft: 6200,
-    lat: 39.1973,
-    lon: -120.2358,
-    report_url: "https://www.palisadestahoe.com/mountain-information/snow-and-weather-report",
-    webcam_url: "https://www.palisadestahoe.com/mountain-information/webcams",
-  },
-  {
-    name: "Heavenly",
-    region: "South Lake Tahoe",
-    elevation_ft: 10067,
-    lat: 38.9351,
-    lon: -119.9390,
-    report_url: "https://www.skiheavenly.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
-    webcam_url: "https://www.skiheavenly.com/the-mountain/mountain-conditions/mountain-cams.aspx",
-  },
-  {
-    name: "Northstar California",
-    region: "Truckee",
-    elevation_ft: 8610,
-    lat: 39.2746,
-    lon: -120.1210,
-    report_url: "https://www.northstarcalifornia.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
-    webcam_url: "https://www.northstarcalifornia.com/the-mountain/mountain-conditions/mountain-cams.aspx",
-  },
-  {
-    name: "Kirkwood",
-    region: "Kirkwood",
-    elevation_ft: 9800,
-    lat: 38.6846,
-    lon: -120.0650,
-    report_url: "https://www.kirkwood.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
-    webcam_url: "https://www.kirkwood.com/the-mountain/mountain-conditions/mountain-cams.aspx",
-  },
-];
+import { RESORTS } from "./resorts.js";
 
 function sum(arr) {
   return arr.reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0);
@@ -60,7 +23,7 @@ async function fetchOpenMeteoSnow(lat, lon) {
   url.searchParams.set("timezone", "UTC");
 
   const res = await fetch(url.toString(), {
-    headers: { "User-Agent": "tahoe-snow-report/1.0" },
+    headers: { "User-Agent": "snowreport/1.0" },
   });
   if (!res.ok) throw new Error(`Open-Meteo error ${res.status}`);
   const data = await res.json();
@@ -68,7 +31,6 @@ async function fetchOpenMeteoSnow(lat, lon) {
   const times = data?.hourly?.time || [];
   const snowfallCm = data?.hourly?.snowfall || [];
 
-  // Find the last timestamp index (most recent hour)
   const n = Math.min(times.length, snowfallCm.length);
   if (n === 0) return { snow24_in: null, snow72_in: null };
 
@@ -85,11 +47,19 @@ async function fetchOpenMeteoSnow(lat, lon) {
 
 export default async function handler(req, res) {
   try {
+    // Optional filtering: /api/snow?state=CO
+    const state = (req?.query?.state || "").toString().trim().toUpperCase();
+
+    const list = state
+      ? RESORTS.filter((r) => (r.state || "").toUpperCase() === state)
+      : RESORTS;
+
     const resorts = await Promise.all(
-      RESORTS.map(async (r) => {
+      list.map(async (r) => {
         const { snow24_in, snow72_in } = await fetchOpenMeteoSnow(r.lat, r.lon);
         return {
           name: r.name,
+          state: r.state,
           region: r.region,
           elevation_ft: r.elevation_ft,
           snow_24h_in: snow24_in,
@@ -112,6 +82,7 @@ export default async function handler(req, res) {
       updated_at: new Date().toISOString(),
       source: "Open-Meteo hourly snowfall (model) via /api/snow",
       resorts,
+      filters: state ? { state } : {},
     });
   } catch (e) {
     res.status(500).json({
