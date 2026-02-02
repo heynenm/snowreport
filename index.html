@@ -82,6 +82,35 @@ body.storm .header{animation:molt-float 3.5s ease-in-out infinite;}
   #stormToggle{display:none;}
 }
 
+
+    /* Wind indicator */
+    .wind {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .wind .arrow {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      transform-origin: 50% 50%;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+    }
+    .wind.wobble .arrow {
+      animation: windWobble 1.6s ease-in-out infinite;
+    }
+    @keyframes windWobble {
+      0%, 100% { transform: rotate(var(--wind-rot, 0deg)) translateY(0); }
+      50% { transform: rotate(calc(var(--wind-rot, 0deg) + 6deg)) translateY(-1px); }
+    }
+
+    /* Snow intensity hooks */
+    body.intensity-light #snowCanvas { opacity: 0.45; }
+    body.intensity-medium #snowCanvas { opacity: 0.70; }
+    body.intensity-heavy #snowCanvas { opacity: 0.95; }
+
 </style>
 </head>
 <body>
@@ -225,6 +254,7 @@ body.storm .header{animation:molt-float 3.5s ease-in-out infinite;}
   if(typeof _renderResorts === 'function'){
     window.renderResorts = function(resorts){
       _renderResorts(resorts);
+      try { setSnowIntensityFromData(resorts); } catch (e) {}
       document.querySelectorAll('.stat .value, .stat-value').forEach(el=>{
         const raw = (el.textContent||'').trim();
         const m = raw.match(/(-?\d+(?:\.\d+)?)/);
@@ -292,6 +322,46 @@ body.storm .header{animation:molt-float 3.5s ease-in-out infinite;}
   }
   requestAnimationFrame(step);
 })();
+
+
+
+    function setSnowIntensityFromData(resorts) {
+      // Use max 24h snowfall across resorts as a crude intensity signal.
+      let maxNew = 0;
+      for (const r of resorts) {
+        const v = Number(r.new_snow_24h ?? r.new_snow ?? r.new24 ?? 0);
+        if (!Number.isNaN(v)) maxNew = Math.max(maxNew, v);
+      }
+      document.body.classList.remove('intensity-light','intensity-medium','intensity-heavy');
+      if (maxNew >= 12) document.body.classList.add('intensity-heavy');
+      else if (maxNew >= 4) document.body.classList.add('intensity-medium');
+      else document.body.classList.add('intensity-light');
+
+      // Also scale snow engine if present.
+      if (window.__snowEngine && typeof window.__snowEngine.setIntensity === 'function') {
+        const level = maxNew >= 12 ? 1.0 : maxNew >= 4 ? 0.7 : 0.45;
+        window.__snowEngine.setIntensity(level);
+      }
+    }
+
+    function renderWindIndicator(resort) {
+      const deg = resort.wind_deg ?? resort.windDirDeg ?? resort.wind_direction_deg;
+      const mph = resort.wind_mph ?? resort.windSpeedMph ?? resort.wind_speed_mph;
+      if (deg == null && mph == null) return '';
+      const rot = (Number(deg) || 0) + 180; // arrow points "to" direction visually
+      const speed = mph != null ? `${Number(mph)} mph` : '';
+      const wobble = mph != null && Number(mph) >= 15;
+      return `
+        <div class="wind ${wobble ? 'wobble' : ''}" style="--wind-rot:${rot}deg">
+          <span class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2l6 10h-4v10h-4V12H6L12 2z" fill="rgba(255,255,255,0.92)"/>
+            </svg>
+          </span>
+          <span>${speed}</span>
+        </div>
+      `;
+    }
 
 </script>
 </body>
