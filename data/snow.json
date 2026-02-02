@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-02-02T00:56:23.516072Z",
-  "source": "Open-Meteo (modeled snowfall near resort coordinates)",
+  "updated_at": "2026-02-02T01:08:34.664411Z",
+  "source": "Open-Meteo (modeled snowfall) + OnTheSnow (ops stats best-effort)",
   "resorts": [
     {
       "name": "Palisades Tahoe",
@@ -8,59 +8,59 @@
       "elevation_ft": 6200,
       "snow_24h_in": 0.0,
       "snow_72h_in": 0.0,
-      "base_depth_in": null,
+      "base_depth_in": 36,
       "trails_open": null,
       "trails_total": null,
-      "lifts_open": null,
-      "lifts_total": null,
-      "report_url": "https://www.palisadestahoe.com/mountain-information",
+      "lifts_open": 36,
+      "lifts_total": 39,
+      "report_url": "https://www.palisadestahoe.com/mountain-information/snow-and-weather-report",
       "webcams_url": "https://www.palisadestahoe.com/mountain-information/webcams",
-      "notes": "Snowfall derived from Open-Meteo modeled snowfall (mm -> inches). Resort ops stats not provided by this source."
+      "notes": "Snowfall from Open-Meteo (modeled). Ops stats best-effort from OnTheSnow skireport."
     },
     {
       "name": "Heavenly",
       "region": "South Lake Tahoe",
-      "elevation_ft": 9150,
+      "elevation_ft": 10067,
       "snow_24h_in": 0.0,
       "snow_72h_in": 0.0,
       "base_depth_in": null,
       "trails_open": null,
       "trails_total": null,
-      "lifts_open": null,
-      "lifts_total": null,
+      "lifts_open": 27,
+      "lifts_total": 27,
       "report_url": "https://www.skiheavenly.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
       "webcams_url": "https://www.skiheavenly.com/the-mountain/mountain-conditions/mountain-cams.aspx",
-      "notes": "Snowfall derived from Open-Meteo modeled snowfall (mm -> inches). Resort ops stats not provided by this source."
+      "notes": "Snowfall from Open-Meteo (modeled). Ops stats best-effort from OnTheSnow skireport."
     },
     {
-      "name": "Northstar",
+      "name": "Northstar California",
       "region": "Truckee",
       "elevation_ft": 8610,
       "snow_24h_in": 0.0,
       "snow_72h_in": 0.0,
-      "base_depth_in": null,
+      "base_depth_in": 17,
       "trails_open": null,
       "trails_total": null,
-      "lifts_open": null,
-      "lifts_total": null,
+      "lifts_open": 17,
+      "lifts_total": 20,
       "report_url": "https://www.northstarcalifornia.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
       "webcams_url": "https://www.northstarcalifornia.com/the-mountain/mountain-conditions/mountain-cams.aspx",
-      "notes": "Snowfall derived from Open-Meteo modeled snowfall (mm -> inches). Resort ops stats not provided by this source."
+      "notes": "Snowfall from Open-Meteo (modeled). Ops stats best-effort from OnTheSnow skireport."
     },
     {
       "name": "Kirkwood",
       "region": "Kirkwood",
-      "elevation_ft": 7800,
+      "elevation_ft": 9800,
       "snow_24h_in": 0.0,
       "snow_72h_in": 0.0,
-      "base_depth_in": null,
+      "base_depth_in": 12,
       "trails_open": null,
       "trails_total": null,
-      "lifts_open": null,
-      "lifts_total": null,
+      "lifts_open": 12,
+      "lifts_total": 13,
       "report_url": "https://www.kirkwood.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx",
       "webcams_url": "https://www.kirkwood.com/the-mountain/mountain-conditions/mountain-cams.aspx",
-      "notes": "Snowfall derived from Open-Meteo modeled snowfall (mm -> inches). Resort ops stats not provided by this source."
+      "notes": "Snowfall from Open-Meteo (modeled). Ops stats best-effort from OnTheSnow skireport."
     }
   ]
 }
